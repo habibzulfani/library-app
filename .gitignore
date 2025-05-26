@@ -1,0 +1,4 @@
+# .gitignore
+
+.env
+# Add other files/directories to ignore

@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Bibliography Management - University Repository</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+         .logo-placeholder {
+            width: 100px;
+            height: 100px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #007bff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .sidebar {
+            height: calc(100vh - 56px);
+            position: fixed;
+            top: 56px;
+            left: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+        }
+        .main-content {
+            margin-left: 16.666667%; /* Matches col-md-2 width */
+            padding: 20px;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: static;
+                height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+        .document-name {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        .pagination-info {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        .page-select {
+            width: auto;
+            display: inline-block;
+        }
+        .edit-btn {
+            padding: 2px 5px;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Admin Dashboard</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="homeBtn" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Manage
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#">Member</a></li>
+                            <li><a class="dropdown-item" href="#">Bibliography</a></li>
+                            <li><a class="dropdown-item" href="#">Report</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="d-inline-block user-avatar">AD</div>
+                            Admin User
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="#" id="profileButton">Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutButton">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 sidebar">
+                <div class="logo-placeholder">Logo</div>
+                <h5 class="text-center mb-3">University Name</h5>
+                <div class="d-grid gap-2">
+                    <button id="searchUserBtn" class="btn btn-primary" type="button">Search User</button>
+                    <button id="addUserBtn" class="btn btn-primary" type="button">Add User</button>
+                    <button id="userMembershipTypeBtn" class="btn btn-primary" type="button">User Membership's Type</but>
+                </div>
+                <hr>
+                <div class="d-grid gap-2">
+                    <button id="bibliographyListBtn" class="btn btn-secondary" type="button">Bibliography List</button>
+                    <button id="addBibliographyBtn" class="btn btn-secondary" type="button">Add Bibliography</button>
+                </div>
+            </div>
+            <main class="col-md-10 ms-sm-auto main-content">
+                <div class="container">
+                    <h1 class="mt-4 mb-4">Bibliography Management</h1>
+                    <form class="mb-4">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-auto flex-grow-1">
+                                <input type="text" id="searchInput" class="form-control" placeholder="Search books/papers...">
+                            </div>
+                            <div class="col-auto">
+                                <select id="searchType" class="form-select">
+                                    <option value="all" selected>All</option>
+                                    <option value="title">Title</option>
+                                    <option value="author">Author</option>
+                                    <option value="isbn_issn">ISBN/ISSN</option>
+                                    <option value="year">Year</option>
+                                    <option value="document_type">Document Type</option>
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <button id="searchButton" type="submit" class="btn btn-primary">Search</button>
+                            </div>
+                            <div class="col-auto">
+                                <button id="clearSearchButton" type="button" class="btn btn-secondary">Clear Search</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="mb-3">
+                        <button id="deleteSelected" class="btn btn-danger">Delete Selected</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="selectAll"></th>
+                                    <th>Edit</th>
+                                    <th>Document Data</th>
+                                    <th>ISBN/ISSN</th>
+                                    <th>Document Type</th>
+                                    <th>Year</th>
+                                    <th>Created</th>
+                                    <th>Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bibliographyTableBody">
+                                <!-- Table rows will be dynamically inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination section -->
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div id="pageInfo" class="pagination-info">
+                            Page 1 of 1
+                        </div>
+                        <nav aria-label="Page navigation">
+                            <ul id="pagination" class="pagination">
+                                <!-- Pagination links will be dynamically inserted here -->
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ... (All JavaScript remains the same as in the original bibliography management page) ...
+
+        // Add these user menu interactions
+        document.getElementById('profileButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Redirecting to admin profile page');
+        });
+
+        // Function to get the base URL
+        function getBaseUrl() {
+            const protocol = window.location.protocol;
+            const hostname = window.location.hostname;
+            return `${protocol}//${hostname}:8080`; // Assuming your Go server is on port 8080
+        }
+
+
+
+        // Function to handle the "Search User" button click
+        function handleSearchUser() {
+            window.location.href = `${getBaseUrl()}/search-user`;
+        }
+
+        // Function to handle the "Add User" button click
+        function handleAddUser() {
+            window.location.href = `${getBaseUrl()}/register`;
+        }
+
+        // Function to handle the "User Membership's Type" button click
+        function handleUserMembershipType() {
+            window.location.href = `${getBaseUrl()}/user-membership-type`;
+        }
+
+        // Function to handle the "Bibliography List" button click
+        function handleBibliographyList() {
+            window.location.href = `${getBaseUrl()}/bibliography-list`;
+        }
+
+        // Function to handle the "Add Bibliography" button click
+        function handleAddBibliography() {
+            window.location.href = `${getBaseUrl()}/add-bibliography`;
+        }
+
+        function checkLoggedInStatus() {
+            const token = localStorage.getItem('jwtToken');
+            if (token) {
+                const baseUrl = getBaseUrl();
+                const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+                
+                if (userInfo.role === 'admin') {
+                    // If the user is an admin, do nothing (stay on the current page)
+                    console.log('Admin user detected. Staying on current page.');
+                } else {
+                    // If the user is not an admin, redirect to the homepage
+                    console.log('Non-admin user detected. Redirecting to homepage.');
+                    window.location.href = `${getBaseUrl()}/index.html`;
+                }
+                } else {
+                    // If there's no token, redirect to the login page
+                    console.log('No token found. Redirecting to login page.');
+                    window.location.href = `${getBaseUrl()}/login`;
+                }
+        }
+
+        let allBibliography = []; // Store all bibliography items
+        let currentBibliography = []; // Store currently displayed items (after search/filter)
+        let currentPage = 1;
+        const itemsPerPage = 10;
+
+        function fetchBibliographyData() {
+            const baseUrl = getBaseUrl();
+            fetch(`${baseUrl}/api/bibliographies`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.message === "success" && Array.isArray(data.data)) {
+                    allBibliography = data.data.map(item => ({
+                        ...item,
+                        type: item.type.toLowerCase() === 'book' ? 'book' : 'paper'
+                    }));
+                    currentBibliography = allBibliography;
+                    currentPage = 1;
+                    displayBibliography();
+                } else {
+                    throw new Error('Unexpected data format');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching bibliography data:', error);
+                alert('Failed to fetch bibliography data. Please try again later.');
+            });
+        }
+
+        function displayBibliography() {
+            const totalPages = Math.ceil(currentBibliography.length / itemsPerPage);
+        
+            if (currentPage < 1) currentPage = 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+        
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const itemsToDisplay = currentBibliography.slice(startIndex, endIndex);
+        
+            const tableBody = document.getElementById('bibliographyTableBody');
+            tableBody.innerHTML = '';
+            itemsToDisplay.forEach(item => {
+                const itemType = item.type.toLowerCase() === 'book' ? 'book' : 'paper';
+                const row = `
+                    <tr>
+                        <td><input type="checkbox" class="bibliography-select" data-id="${item.id}"></td>
+                        <td><button class="btn btn-sm btn-primary edit-btn" data-id="${item.id}" data-type="${itemType}">Edit</button></td>
+                        <td>
+                            <div class="document-name">${item.title}</div>
+                            <div>${item.authors}</div>
+                            ${item.data.abstract ? `<div>${item.data.abstract.substring(0, 100)}...</div>` : ''}
+                        </td>
+                        <td>${item.data.isbn || item.data.issn || 'N/A'}</td>
+                        <td>${itemType}</td>
+                        <td>${item.data.published_year || item.data.year}</td>
+                        <td>${new Date(item.data.created_at).toLocaleDateString()}</td>
+                        <td>${new Date(item.data.updated_at).toLocaleDateString()}</td>
+                    </tr>
+                `;
+                tableBody.insertAdjacentHTML('beforeend', row);
+            });
+        
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', handleEditBibliography);
+            });
+        
+            updatePagination();
+            }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(currentBibliography.length / itemsPerPage);
+            const paginationElement = document.getElementById('pagination');
+            const pageInfo = document.getElementById('pageInfo');
+            
+            pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        
+            paginationElement.innerHTML = '';
+            
+            // Add "Previous" button
+            const prevLi = document.createElement('li');
+            prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            const prevA = document.createElement('a');
+            prevA.className = 'page-link';
+            prevA.href = '#';
+            prevA.textContent = 'Previous';
+            prevA.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayBibliography();
+                }
+            });
+            prevLi.appendChild(prevA);
+            paginationElement.appendChild(prevLi);
+        
+            // Add page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const li = document.createElement('li');
+                li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                const a = document.createElement('a');
+                a.className = 'page-link';
+                a.href = '#';
+                a.textContent = i;
+                a.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    currentPage = i;
+                    displayBibliography();
+                });
+                li.appendChild(a);
+                paginationElement.appendChild(li);
+            }
+        
+            // Add "Next" button
+            const nextLi = document.createElement('li');
+            nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            const nextA = document.createElement('a');
+            nextA.className = 'page-link';
+            nextA.href = '#';
+            nextA.textContent = 'Next';
+            nextA.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayBibliography();
+                }
+            });
+            nextLi.appendChild(nextA);
+            paginationElement.appendChild(nextLi);
+        }
+
+        function handleEditBibliography(e) {
+            const itemId = e.target.getAttribute('data-id');
+            const itemType = e.target.getAttribute('data-type');
+            const baseUrl = getBaseUrl();
+            window.location.href = `${baseUrl}/update-bibliography/${itemType}/${itemId}`;
+        }
+
+        // Function to handle the "Home" button click
+        function handleHomeButton() {
+            window.location.href = `${getBaseUrl()}/dashboard`;
+        }
+
+        function searchBibliography() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const searchType = document.getElementById('searchType').value;
+
+            currentBibliography = allBibliography.filter(item => {
+                switch(searchType) {
+                    case 'title':
+                        return item.title.toLowerCase().includes(searchTerm);
+                    case 'author':
+                        return item.authors.toLowerCase().includes(searchTerm);
+                    case 'isbn_issn':
+                        return (item.data.isbn || item.data.issn || '').toLowerCase().includes(searchTerm);
+                    case 'year':
+                        const year = String(item.data.published_year || item.data.year || '');
+                        return year.includes(searchTerm);
+                    case 'document_type':
+                        return item.type.toLowerCase().includes(searchTerm);
+                    default:
+                        return item.title.toLowerCase().includes(searchTerm) || 
+                            item.authors.toLowerCase().includes(searchTerm) ||
+                            (item.data.isbn || item.data.issn || '').toLowerCase().includes(searchTerm) ||
+                            String(item.data.published_year || item.data.year || '').includes(searchTerm) ||
+                            item.type.toLowerCase().includes(searchTerm);
+                }
+            });
+
+            currentPage = 1;
+            displayBibliography();
+        }
+
+        function deleteSelectedBibliography() {
+            const selectedItems = document.querySelectorAll('.bibliography-select:checked');
+            if (selectedItems.length === 0) {
+                alert('No items selected for deletion.');
+                return;
+            }
+
+            if (confirm(`Are you sure you want to delete ${selectedItems.length} selected item(s)? This action cannot be undone and will also delete associated digital files.`)) {
+                const itemsToDelete = Array.from(selectedItems).map(checkbox => {
+                    const row = checkbox.closest('tr');
+                    const typeCell = row.querySelector('td:nth-child(5)'); // Adjust this index based on your table structure
+                    const type = typeCell.textContent.toLowerCase();
+                    return {
+                        id: parseInt(checkbox.getAttribute('data-id')),
+                        type: type === 'book' ? 'book' : 'paper' // Assuming anything that's not a book is a paper
+                    };
+                });
+
+                const baseUrl = getBaseUrl();
+
+                fetch(`${baseUrl}/api/bibliographies`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ items: itemsToDelete })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Server response:', data);
+                    
+                    if (data.success) {
+                        alert(data.message);
+                        // Remove all deleted items from the arrays
+                        const deletedIds = data.results.map(result => result.id);
+                        allBibliography = allBibliography.filter(item => !deletedIds.includes(item.id));
+                        currentBibliography = currentBibliography.filter(item => !deletedIds.includes(item.id));
+                    } else {
+                        // Some or all deletions failed
+                        const failedDeletions = data.results.filter(result => !result.success);
+                        const successfulDeletions = data.results.filter(result => result.success);
+                        
+                        // Remove successfully deleted items
+                        const deletedIds = successfulDeletions.map(result => result.id);
+                        allBibliography = allBibliography.filter(item => !deletedIds.includes(item.id));
+                        currentBibliography = currentBibliography.filter(item => !deletedIds.includes(item.id));
+                        
+                        // Prepare error message
+                        const errorMessages = failedDeletions.map(result => `ID ${result.id}: ${result.message}`).join('\n');
+                        alert(`Some items failed to delete:\n${errorMessages}\n\nSuccessfully deleted ${successfulDeletions.length} item(s).`);
+                    }
+                    
+                    currentPage = 1;
+                    displayBibliography();
+                })
+                .catch(error => {
+                    console.error('Error deleting items:', error);
+                    alert(`Failed to delete items: ${error.message}. Please try again or contact an administrator.`);
+                });
+            }
+        }
+
+        // Wait for the DOM to be fully loaded before adding event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listeners to the buttons
+            document.getElementById('searchUserBtn').addEventListener('click', handleSearchUser);
+            document.getElementById('addUserBtn').addEventListener('click', handleAddUser);
+            document.getElementById('userMembershipTypeBtn').addEventListener('click', handleUserMembershipType);
+            document.getElementById('bibliographyListBtn').addEventListener('click', handleBibliographyList);
+            document.getElementById('addBibliographyBtn').addEventListener('click', handleAddBibliography);
+            document.getElementById('homeBtn').addEventListener('click', handleHomeButton);
+
+            // Add event listener for logout button
+            document.getElementById('logoutButton').addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Logging out...');
+                localStorage.removeItem('jwtToken');
+                localStorage.removeItem('userInfo');
+                alert('Logged out successfully');
+                window.location.href = `${getBaseUrl()}/home`;
+            });
+
+            document.getElementById('searchInput').addEventListener('input', searchBibliography);
+            document.getElementById('searchType').addEventListener('change', searchBibliography);
+            document.getElementById('searchButton').addEventListener('click', function(e) {
+                e.preventDefault();
+                searchBibliography();
+            });
+            document.getElementById('clearSearchButton').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('searchInput').value = '';
+                document.getElementById('searchType').value = 'all';
+                currentBibliography = allBibliography;
+                currentPage = 1;
+                displayBibliography();
+            });
+            document.getElementById('deleteSelected').addEventListener('click', function(e) {
+                e.preventDefault();
+                deleteSelectedBibliography();
+            });
+            document.getElementById('selectAll').addEventListener('change', function(e) {
+                const isChecked = e.target.checked;
+                document.querySelectorAll('.bibliography-select').forEach(checkbox => {
+                    checkbox.checked = isChecked;
+                });
+            });
+
+            checkLoggedInStatus();
+            fetchBibliographyData();
+            });
+
+    </script>
+</body>
+</html>

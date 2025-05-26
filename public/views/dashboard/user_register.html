@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - User Input Form - University Repository</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .logo-placeholder {
+            width: 100px;
+            height: 100px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #007bff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .sidebar {
+            height: calc(100vh - 56px);
+            position: fixed;
+            top: 56px;
+            left: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+        }
+        .main-content {
+            margin-left: 16.666667%; /* Matches col-md-2 width */
+            padding: 20px;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: static;
+                height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Admin Dashboard</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="homeBtn" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Manage
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#">Member</a></li>
+                            <li><a class="dropdown-item" href="#">Bibliography</a></li>
+                            <li><a class="dropdown-item" href="#">Report</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="d-inline-block user-avatar">AD</div>
+                            Admin User
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="#" id="profileButton">Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutButton">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 sidebar">
+                <div class="logo-placeholder">Logo</div>
+                <h5 class="text-center mb-3">University Name</h5>
+                <div class="d-grid gap-2">
+                    <button id="searchUserBtn" class="btn btn-primary" type="button">Search User</button>
+                    <button id="addUserBtn" class="btn btn-primary" type="button">Add User</button>
+                    <button id="userMembershipTypeBtn" class="btn btn-primary" type="button">User Membership's Type</but>
+                </div>
+                <hr>
+                <div class="d-grid gap-2">
+                    <button id="bibliographyListBtn" class="btn btn-secondary" type="button">Bibliography List</button>
+                    <button id="addBibliographyBtn" class="btn btn-secondary" type="button">Add Bibliography</button>
+                </div>
+            </div>
+            <main class="col-md-10 ms-sm-auto main-content">
+                <div class="container">
+                    <h1 class="mt-4 mb-4">User Input Form</h1>
+                    <form id="registrationForm">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="userType" class="form-label">User Status</label>
+                            <select class="form-select" id="userType" required>
+                                <option value="">Choose...</option>
+                                <option value="student">Student</option>
+                                <option value="teacher">Teacher/Professor</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="idNumber" class="form-label" id="idNumberLabel">NIM/NISN</label>
+                            <input type="text" class="form-control" id="idNumber" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fakultas" class="form-label">Fakultas</label>
+                            <select class="form-select" id="fakultas" required>
+                                <option value="">Choose...</option>
+                                <option value="ekonomi">Ekonomi</option>
+                                <option value="hukum">Hukum</option>
+                                <option value="ilmu_komputer">Ilmu Komputer</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="jurusan" class="form-label">Jurusan</label>
+                            <select class="form-select" id="jurusan" required>
+                                <option value="">Choose Fakultas first</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea class="form-control" id="address" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Role</label>
+                            <select class="form-select" id="role" required>
+                                <option value="">Choose...</option>
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // User menu interactions
+    document.getElementById('profileButton').addEventListener('click', function(e) {
+        e.preventDefault();
+        alert('Redirecting to admin profile page');
+        // Implement profile page redirection
+    });
+
+     // Function to get the base URL
+        function getBaseUrl() {
+            const protocol = window.location.protocol;
+            const hostname = window.location.hostname;
+            return `${protocol}//${hostname}:8080`; // Assuming your Go server is on port 8080
+        }
+
+        function getJWTToken() {
+        return localStorage.getItem('jwtToken');
+        }   
+
+        // Function to handle the "Search User" button click
+        function handleSearchUser() {
+            window.location.href = `${getBaseUrl()}/search-user`;
+        }
+
+        // Function to handle the "Add User" button click
+        function handleAddUser() {
+            window.location.href = `${getBaseUrl()}/register`;
+        }
+
+        // Function to handle the "User Membership's Type" button click
+        function handleUserMembershipType() {
+            window.location.href = `${getBaseUrl()}/user-membership-type`;
+        }
+
+        // Function to handle the "Bibliography List" button click
+        function handleBibliographyList() {
+            window.location.href = `${getBaseUrl()}/bibliography-list`;
+        }
+
+        // Function to handle the "Add Bibliography" button click
+        function handleAddBibliography() {
+            window.location.href = `${getBaseUrl()}/add-bibliography`;
+        }
+
+        // Function to handle the "Home" button click
+        function handleHomeButton() {
+            window.location.href = `${getBaseUrl()}/dashboard`;
+        }
+
+        function populateFakultasAndJurusan() {
+            const baseUrl = getBaseUrl();
+            const token = localStorage.getItem('jwtToken');
+            if (!token) {
+                alert('You are not logged in. Please log in to access this feature.');
+                window.location.href = `${baseUrl}/login`;
+                return;
+            }
+            
+            fetch(`${baseUrl}/api/fakultas-jurusan`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const fakultasSelect = document.getElementById('fakultas');
+                const jurusanSelect = document.getElementById('jurusan');
+
+                // Clear existing options
+                fakultasSelect.innerHTML = '<option value="">Choose...</option>';
+                jurusanSelect.innerHTML = '<option value="">Choose Fakultas first</option>';
+
+                data.forEach(fakultas => {
+                    const option = document.createElement('option');
+                    option.value = fakultas.ID;
+                    option.textContent = fakultas.name;
+                    fakultasSelect.appendChild(option);
+                });
+
+                fakultasSelect.addEventListener('change', function() {
+                    jurusanSelect.innerHTML = '<option value="">Choose...</option>';
+                    const selectedFakultas = data.find(f => f.ID == this.value);
+                    if (selectedFakultas && selectedFakultas.jurusans) {
+                        selectedFakultas.jurusans.forEach(jurusan => {
+                            const option = document.createElement('option');
+                            option.value = jurusan.ID;
+                            option.textContent = jurusan.name;
+                            jurusanSelect.appendChild(option);
+                        });
+                        jurusanSelect.disabled = false;
+                    } else {
+                        jurusanSelect.disabled = true;
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching Fakultas and Jurusan data:', error);
+                alert('Failed to load Fakultas and Jurusan data. Please try again later.');
+            });
+        }
+
+         // Function to send registration data to the server
+         function sendRegistrationData(userData) {
+            const jwtToken = getJWTToken();
+            if (!jwtToken) {
+                alert('You are not logged in. Please log in to submit the form.');
+                window.location.href = `${getBaseUrl()}/login`;
+                return;
+            }
+        const baseUrl = getBaseUrl();
+        console.log('Sending userData:', JSON.stringify(userData, null, 2));
+
+        fetch(`${baseUrl}/api/register`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + jwtToken
+            },
+            body: JSON.stringify(userData)
+            })
+            .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(`Network response was not ok: ${response.status} ${response.statusText}\n${JSON.stringify(errorData)}`);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.message === "User created successfully") {
+                alert('User registration successful!');
+                document.querySelector('form').reset();
+            } else {
+                alert('Registration failed. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred during registration. Please try again.');
+            });
+        }
+
+        function isTokenExpired(token) {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            return (payload.exp * 1000) < Date.now();
+        }
+
+        function checkLoggedInStatus() {
+            const token = localStorage.getItem('jwtToken');
+            if (token && !isTokenExpired(token)) {
+                const baseUrl = getBaseUrl();
+                const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+
+                if (userInfo.role === 'admin') {
+                    console.log('Admin user detected. Staying on current page.');
+                } else {
+                    console.log('Non-admin user detected. Redirecting to homepage.');
+                    window.location.href = `${getBaseUrl()}/index.html`;
+                }
+            } else {
+                console.log('No valid token found. Redirecting to login page.');
+                localStorage.removeItem('jwtToken');
+                window.location.href = `${getBaseUrl()}/login`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Call initial setup functions
+            populateFakultasAndJurusan();
+            checkLoggedInStatus();
+            const userTypeSelect = document.getElementById('userType');
+            const idNumberLabel = document.getElementById('idNumberLabel');
+                userTypeSelect.addEventListener('change', function() {
+                    if (this.value === 'student') {
+                        idNumberLabel.textContent = 'NIM';
+                    } else if (this.value === 'teacher') {
+                        idNumberLabel.textContent = 'NISN';
+                    } else {
+                        idNumberLabel.textContent = 'NIM/NISN';
+                    }
+                });
+
+            // Add event listeners to the buttons
+            document.getElementById('searchUserBtn').addEventListener('click', handleSearchUser);
+            document.getElementById('addUserBtn').addEventListener('click', handleAddUser);
+            document.getElementById('userMembershipTypeBtn').addEventListener('click', handleUserMembershipType);
+            document.getElementById('bibliographyListBtn').addEventListener('click', handleBibliographyList);
+            document.getElementById('addBibliographyBtn').addEventListener('click', handleAddBibliography);
+            document.getElementById('homeBtn').addEventListener('click', handleHomeButton);
+            
+            // Add event listener for logout button
+            document.getElementById('logoutButton').addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Logging out...');
+                localStorage.removeItem('jwtToken');
+                localStorage.removeItem('userInfo');
+                alert('Logged out successfully');
+                window.location.href = `${getBaseUrl()}/index.html`;
+            });
+
+            // Add form submission event listener
+            document.querySelector('form').addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // const jurusanValue = document.getElementById('jurusan').value;
+                // if (!jurusanValue) {
+                //     alert('Please select a valid jurusan.');
+                //     return;
+                // }
+
+                const userData = {
+                    email: document.getElementById('email').value,
+                    name: document.getElementById('name').value,
+                    user_type: document.getElementById('userType').value,
+                    id_number: document.getElementById('idNumber').value,
+                    jurusan_id: parseInt(document.getElementById('jurusan').value),
+                    jurusan: document.getElementById('jurusan').options[document.getElementById('jurusan').selectedIndex].text,
+                    password: document.getElementById('password').value,
+                    address: document.getElementById('address').value,
+                    role: document.getElementById('role').value,
+                };
+                console.log('Sending user data:', userData);
+
+                sendRegistrationData(userData);
+            });
+        });
+
+    // Call this function when the page loads
+        // document.addEventListener('DOMContentLoaded', populateFakultasAndJurusan);
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Repository</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .search-container {
+            height: 50vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-placeholder {
+            width: 100px;
+            height: 100px;
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #007bff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .card {
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card-title {
+            color: #007bff;
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Top bar -->
+        <div class="row py-3">
+            <div class="col-6">
+                <!-- University logo placeholder -->
+                <div class="logo-placeholder">
+                    UniRepo
+                </div>
+            </div>
+            <div class="col-6 text-end">
+                <!-- User profile and dropdown -->
+                <div class="d-flex align-items-center justify-content-end">
+                    <div class="user-avatar">
+                        JD
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            John Doe
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="#" id="profileButton">Profile</a></li>
+                            <li><a class="dropdown-item" href="#" id="allProductsButton">All Products</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutButton">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search bar -->
+        <div class="row search-container">
+            <div class="col-md-8 mx-auto">
+                <form id="searchForm">
+                    <div class="input-group input-group-lg">
+                        <input type="text" class="form-control" placeholder="Search papers, books, articles..." aria-label="Search" aria-describedby="button-addon2">
+                        <button class="btn btn-primary" type="submit" id="button-addon2">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Category cards -->
+        <div class="row mt-5">
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Journal Articles</h5>
+                        <p class="card-text">Explore peer-reviewed journal articles.</p>
+                        <a href="#" class="btn btn-primary" onclick="redirectToPage('journal')">View Journals</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Books</h5>
+                        <p class="card-text">Browse our collection of academic books.</p>
+                        <a href="#" class="btn btn-primary" onclick="redirectToPage('book')">View Books</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Conference Papers</h5>
+                        <p class="card-text">Access papers from academic conferences.</p>
+                        <a href="#" class="btn btn-primary">View Papers</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Archives</h5>
+                        <p class="card-text">Explore historical academic archives.</p>
+                        <a href="#" class="btn btn-primary">View Archives</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function getBaseUrl() {
+            const protocol = window.location.protocol;
+            const hostname = window.location.hostname;
+            return `${protocol}//${hostname}:8080`;
+        }
+    
+        function isTokenExpired(token) {
+            if (!token) return true;
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            return (payload.exp * 1000) < Date.now();
+        }
+    
+        function checkLoggedInStatus() {
+            const token = localStorage.getItem('jwtToken');
+            if (token && !isTokenExpired(token)) {
+                const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+                if (userInfo.role === 'admin' || userInfo.role === 'user') {
+                    console.log(`${userInfo.role.charAt(0).toUpperCase() + userInfo.role.slice(1)} detected. Staying on page.`);
+                }
+            } else {
+                console.log('No valid token found. Returning to home.');
+                logout();
+            }
+        }
+    
+        function logout() {
+            localStorage.removeItem('jwtToken');
+            localStorage.removeItem('userInfo');
+            console.log('Logged out successfully');
+            window.location.href = `${getBaseUrl()}/home`;
+        }
+    
+        function redirectToPage(itemType) {
+            // Store the item type in session storage for use on the redirected page
+            sessionStorage.setItem('itemType', itemType);
+            // Redirect to the appropriate page
+            window.location.href = `${getBaseUrl()}/items?type=${itemType}`;
+        }
+    
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check logged in status when the page loads
+            // checkLoggedInStatus();
+    
+            // Event listeners for buttons
+            document.getElementById('profileButton')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Profile functionality to be implemented');
+            });
+    
+            document.getElementById('allProductsButton')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Redirecting to all products page');
+                // Implement the redirection to all products page here
+            });
+    
+            document.getElementById('logoutButton')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                logout();
+            });
+    
+            document.getElementById('searchForm')?.addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Search functionality to be implemented');
+                // Implement the search functionality here
+            });
+        });
+    </script>
+</body>
+</html>

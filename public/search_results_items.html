@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Results - University Repository</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .logo-placeholder {
+            width: 50px;
+            height: 50px;
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .search-results {
+            margin-top: 20px;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #007bff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .bold-text {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <div class="logo-placeholder">UniRepo</div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="d-inline-block user-avatar">JD</div>
+                            John Doe
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#" id="profileButton">Profile</a></li>
+                            <li><a class="dropdown-item" href="#" id="savedItemsButton">Saved Items</a></li>
+                            <li><a class="dropdown-item" href="#" id="historyButton">Search History</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutButton">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1 class="mb-4" id="resultsTitle">Results</h1>
+        <form id="searchForm">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" name="q" placeholder="Search within results..." aria-label="Search" aria-describedby="button-addon2">
+                <button class="btn btn-primary" type="submit" id="button-addon2">Search</button>
+            </div>
+        </form>
+
+        <div class="search-results">
+            <table class="table table-striped">
+                <thead>
+                    <tr id="tableHeader">
+                        <!-- Table headers will be dynamically inserted here -->
+                    </tr>
+                </thead>
+                <tbody id="resultsContainer">
+                    <!-- Results will be dynamically inserted here -->
+                </tbody>
+            </table>
+        </div>
+
+        <nav aria-label="Search results pages" class="mt-4">
+            <ul class="pagination justify-content-center" id="pagination">
+                <!-- Pagination will be dynamically inserted here -->
+            </ul>
+        </nav>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const ITEMS_PER_PAGE = 10;
+        let currentPage = 1;
+        let totalItems = 0;
+        let allResults = [];
+        let currentItemType = '';
+
+        function getBaseUrl() {
+            return window.location.origin;
+        }
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        function updateResultsTitle(itemType) {
+            const titleElement = document.getElementById('resultsTitle');
+            titleElement.textContent = `${capitalizeFirstLetter(itemType)} Results`;
+        }
+
+        function updateTableHeaders(itemType) {
+            const headerRow = document.getElementById('tableHeader');
+            headerRow.innerHTML = '';
+            
+            const headers = itemType === 'book' 
+                ? ['Title', 'Author', 'ISBN', 'Published Year', 'Publisher','DOI', 'Action']
+                : ['Title', 'Author', 'ISSN', 'Year', 'DOI', 'University', 'Action'];
+            
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+        }
+
+        function displayResults(results) {
+            console.log('Displaying results:', results);
+            allResults = results;
+            totalItems = allResults.length;
+            
+            if (totalItems === 0) {
+                document.getElementById('resultsContainer').innerHTML = '<tr><td colspan="6" class="text-center">No results found.</td></tr>';
+                document.getElementById('pagination').innerHTML = '';
+            } else {
+                currentPage = 1;
+                displayPage(currentPage);
+                updatePagination();
+            }
+        }
+
+        function limitTo20Words(text) {
+            if (!text) return '';
+            const words = text.split(/\s+/);
+            if (words.length > 20) {
+                return words.slice(0, 20).join(' ') + '...';
+            }
+            return text;
+        }
+        function displayPage(page) {
+            const container = document.getElementById('resultsContainer');
+            container.innerHTML = '';
+
+            const start = (page - 1) * ITEMS_PER_PAGE;
+            const end = Math.min(start + ITEMS_PER_PAGE, totalItems);
+
+            for (let i = start; i < end; i++) {
+                const item = allResults[i];
+                const row = document.createElement('tr');
+
+                const summary = item.summary ? limitTo20Words(item.summary) : '';
+                const abstract = item.abstract ? limitTo20Words(item.abstract) : '';
+
+                if (currentItemType === 'book') {
+                    row.innerHTML = `
+                        <td>
+                            <div class="document-name bold-text">${item.title || 'No Title'}</div>
+                            <div>${summary}</div>
+                        </td>
+                        <td>${item.authors || 'N/A'}</td>
+                        <td>${item.isbn || 'N/A'}</td>
+                        <td>${item.published_year || item.year || 'N/A'}</td>
+                        <td>${item.publisher || 'N/A'}</td>
+                        <td>${item.doi || 'N/A'}</td>
+                        <td>
+                            <a href="#" class="btn btn-primary btn-sm view-details" data-id="${item.id}" data-type="book">View Details</a>
+                        </td>
+                    `;
+                } else {
+                    row.innerHTML = `
+                        <td>
+                            <div class="document-name bold-text">${item.title || 'No Title'}</div>
+                            <div>${abstract}</div>
+                        </td>
+                        <td>${item.authors || 'N/A'}</td>
+                        <td>${item.issn || 'N/A'}</td>
+                        <td>${item.year || 'N/A'}</td>
+                        <td>${item.university || 'N/A'}</td>
+                        <td>${item.doi || 'N/A'}</td>
+                        <td>
+                            <a href="#" class="btn btn-primary btn-sm view-details" data-id="${item.id}" data-type="paper">View Details</a>
+                        </td>
+                    `;
+                }
+
+                container.appendChild(row);
+            }
+
+            // Add event listeners for view details buttons
+            document.querySelectorAll('.view-details').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const itemId = this.getAttribute('data-id');
+                    const itemType = this.getAttribute('data-type');
+                    window.location.href = `${getBaseUrl()}/product-details?type=${itemType}&id=${itemId}`;
+                });
+            });
+        }
+
+        function updatePagination() {
+            const paginationContainer = document.getElementById('pagination');
+            paginationContainer.innerHTML = '';
+            
+            const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+            
+            for (let i = 1; i <= totalPages; i++) {
+                const li = document.createElement('li');
+                li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                li.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+                paginationContainer.appendChild(li);
+            }
+            
+            paginationContainer.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A' && e.target.hasAttribute('data-page')) {
+                    e.preventDefault();
+                    currentPage = parseInt(e.target.getAttribute('data-page'));
+                    displayPage(currentPage);
+                    updatePagination();
+                }
+            });
+        }
+
+        function performSearch(url) {
+            console.log('Performing search with URL:', url);
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        console.error('Network response was not ok:', response.status, response.statusText);
+                        return response.text().then(text => {
+                            throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
+                        });
+                    }
+                    const contentType = response.headers.get("content-type");
+                    if (contentType && contentType.includes("application/json")) {
+                        return response.json();
+                    } else {
+                        throw new Error("Oops, we haven't got JSON!");
+                    }
+                })
+                .then(data => {
+                    console.log('Raw search results:', data);
+                    console.log('Data structure:', JSON.stringify(data, null, 2));
+                    if (data && Array.isArray(data)) {
+                        console.log('Parsed results:', data);
+                        displayResults(data);
+                    } else if (data && data.data && Array.isArray(data.data)) {
+                        console.log('Parsed results:', data.data);
+                        displayResults(data.data);
+                    } else {
+                        console.error('Unexpected data structure:', data);
+                        document.getElementById('resultsContainer').innerHTML = '<tr><td colspan="6">Error: Unexpected data structure from server.</td></tr>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error during fetch:', error);
+                    document.getElementById('resultsContainer').innerHTML = `
+                        <tr>
+                            <td colspan="6">
+                                An error occurred while searching. Please try again.<br>
+                                Error details: ${error.message}
+                            </td>
+                        </tr>`;
+                });
+        }
+
+        function loadAllItems(itemType) {
+            currentItemType = itemType;
+            updateResultsTitle(itemType);
+            updateTableHeaders(itemType);
+            performSearch(`${getBaseUrl()}/public/${itemType}s`);
+        }
+
+        function filterResults(query) {
+            const filteredResults = allResults.filter(item => {
+                const searchableFields = ['title', 'authors', 'isbn', 'issn', 'publisher', 'university', 'year', 'published_year', 'abstract', 'summary', 'doi'];
+                return searchableFields.some(field => 
+                    item[field] && item[field].toString().toLowerCase().includes(query.toLowerCase())
+                );
+            });
+            displayResults(filteredResults);
+        }
+
+        // Search form submission
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const query = this.querySelector('input[name="q"]').value;
+            filterResults(query);
+        });
+
+        // Initial load based on URL parameters
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const itemType = urlParams.get('type');
+            if (itemType) {
+                loadAllItems(itemType);
+            } else {
+                console.error('No item type specified in URL');
+                document.getElementById('resultsContainer').innerHTML = '<tr><td colspan="6">Error: No item type specified.</td></tr>';
+            }
+        });
+
+        // User menu interactions (keep these as they were)
+        document.getElementById('profileButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Redirecting to profile page');
+        });
+
+        document.getElementById('savedItemsButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Redirecting to saved items page');
+        });
+
+        document.getElementById('historyButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Redirecting to search history page');
+        });
+
+        document.getElementById('logoutButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Logging out...');
+            localStorage.removeItem('jwtToken');
+            localStorage.removeItem('userInfo');
+            console.log('Logged out successfully');
+            window.location.href = `${getBaseUrl()}/home`;
+        });
+    </script>
+</body>
+</html>

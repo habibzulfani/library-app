@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - University Repository</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .logo-placeholder {
+            width: 50px;
+            height: 50px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+        }
+        .search-results {
+            margin-top: 20px;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #007bff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <div class="logo-placeholder">Logo</div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="d-inline-block user-avatar">JD</div>
+                            John Doe
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#" id="profileButton">Profile</a></li>
+                            <li><a class="dropdown-item" href="#" id="savedItemsButton">Saved Items</a></li>
+                            <li><a class="dropdown-item" href="#" id="historyButton">Search History</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutButton">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1 class="mb-4">Search Results</h1>
+        <form id="searchForm">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" name="q" placeholder="Refine your search..." aria-label="Search" aria-describedby="button-addon2">
+                <button class="btn btn-primary" type="submit" id="button-addon2">Search</button>
+            </div>
+        </form>
+
+        <div class="search-results">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>ISBN/ISSN</th>
+                        <th>Year</th>
+                        <th>Publisher/University</th>
+                        <th>DOI</th>
+                        <th>Type</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsContainer">
+                    <!-- Results will be dynamically inserted here -->
+                </tbody>
+            </table>
+        </div>
+
+        <nav aria-label="Search results pages" class="mt-4">
+            <ul class="pagination justify-content-center" id="pagination">
+                <!-- Pagination will be dynamically inserted here -->
+            </ul>
+        </nav>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const ITEMS_PER_PAGE = 10;
+        let currentPage = 1;
+        let totalItems = 0;
+        let allResults = [];
+
+        function getBaseUrl() {
+            return window.location.origin;
+        }
+
+        function displayResults(response) {
+            console.log('Displaying results:', response);
+            const container = document.getElementById('resultsContainer');
+            container.innerHTML = '';
+
+            allResults = response.results;
+            totalItems = response.total;
+
+            if (totalItems === 0) {
+                container.innerHTML = '<tr><td colspan="7" class="text-center">No results found.</td></tr>';
+                document.getElementById('pagination').innerHTML = '';
+            } else {
+                currentPage = 1;
+                displayPage(currentPage);
+                updatePagination();
+            }
+        }
+
+        function displayPage(page) {
+            const container = document.getElementById('resultsContainer');
+            container.innerHTML = '';
+
+            const start = (page - 1) * ITEMS_PER_PAGE;
+            const end = Math.min(start + ITEMS_PER_PAGE, totalItems);
+
+            for (let i = start; i < end; i++) {
+                const item = allResults[i];
+                container.innerHTML += `
+                    <tr>
+                        <td>${item.title}</td>
+                        <td>${item.authors}</td>
+                        <td>${item.identifier}</td>
+                        <td>${item.year}</td>
+                        <td>${item.institution}</td>
+                        <td>${item.doi}</td>
+                        <td>${item.type}</td>
+                        <td>
+                            <a href="#" class="btn btn-primary btn-sm view-details" data-id="${item.id}" data-type="${item.type.toLowerCase()}">View Details</a>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            // Add event listeners for view details buttons
+            document.querySelectorAll('.view-details').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const itemId = this.getAttribute('data-id');
+                    const itemType = this.getAttribute('data-type');
+                    window.location.href = `${getBaseUrl()}/product-details?type=${itemType}&id=${itemId}`;
+                });
+            });
+        }
+
+        function performSearch(url) {
+            console.log('Performing search with URL:', url);
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Search results:', data);
+                    displayResults(data);
+                })
+                .catch(error => {
+                    console.error('Error during fetch:', error);
+                    document.getElementById('resultsContainer').innerHTML = '<tr><td colspan="7">An error occurred while searching. Please try again.</td></tr>';
+                });
+        }
+
+
+        function updatePagination() {
+            const paginationContainer = document.getElementById('pagination');
+            paginationContainer.innerHTML = '';
+            
+            const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+            
+            for (let i = 1; i <= totalPages; i++) {
+                const li = document.createElement('li');
+                li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                li.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+                paginationContainer.appendChild(li);
+            }
+            
+            paginationContainer.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A' && e.target.hasAttribute('data-page')) {
+                    e.preventDefault();
+                    currentPage = parseInt(e.target.getAttribute('data-page'));
+                    displayPage(currentPage);
+                    updatePagination();
+                }
+            });
+        }
+
+        // Search form submission
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var query = new URLSearchParams(new FormData(this)).toString();
+            performSearch(`${getBaseUrl()}/public/search?${query}`);
+        });
+
+        // Initial search based on URL parameters
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('q');
+            if (query) {
+                document.querySelector('input[name="q"]').value = query;
+                performSearch(`${getBaseUrl()}/public/search?q=${encodeURIComponent(query)}`);
+            } else {
+                // Handle advanced search parameters if present
+                const searchParams = new URLSearchParams(window.location.search);
+                if (searchParams.toString()) {
+                    performSearch(`${getBaseUrl()}/public/advanced-search?${searchParams.toString()}`);
+                }
+            }
+        });
+
+        // User menu interactions (keep these as they were)
+        document.getElementById('profileButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Redirecting to profile page');
+        });
+
+        document.getElementById('savedItemsButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Redirecting to saved items page');
+        });
+
+        document.getElementById('historyButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Redirecting to search history page');
+        });
+
+        document.getElementById('logoutButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Logging out...');
+            localStorage.removeItem('jwtToken');
+            localStorage.removeItem('userInfo');
+            console.log('Logged out successfully');
+            window.location.href = `${getBaseUrl()}/home`;
+            
+        });
+    </script>
+</body>
+</html>

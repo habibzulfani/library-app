@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Update Bibliography - University Repository</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- ... (keep your existing styles) ... -->
+    <style>
+        .logo-placeholder {
+            width: 100px;
+            height: 100px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #007bff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .sidebar {
+            height: calc(100vh - 56px);
+            position: fixed;
+            top: 56px;
+            left: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+        }
+        .main-content {
+            margin-left: 16.666667%; /* Matches col-md-2 width */
+            padding: 20px;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: static;
+                height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+
+    <!-- ... (keep your existing navbar and sidebar) ... -->
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Admin Dashboard</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="homeBtn" aria-current="page" href="#">Home</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Manage
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="#">Member</a></li>
+                                <li><a class="dropdown-item" href="#">Bibliography</a></li>
+                                <li><a class="dropdown-item" href="#">Report</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="d-inline-block user-avatar">AD</div>
+                                Admin User
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="#" id="profileButton">Profile</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" id="logoutButton">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-2 sidebar">
+                    <div class="logo-placeholder">Logo</div>
+                    <h5 class="text-center mb-3">University Name</h5>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" type="button">Search User</button>
+                        <button class="btn btn-primary" type="button">Add User</button>
+                        <button class="btn btn-primary" type="button">User Membership's Type</button>
+                    </div>
+                    <hr>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-secondary" type="button">Bibliography List</button>
+                        <button class="btn btn-secondary" type="button">Add Bibliography</button>
+                    </div>
+                </div>
+    <main class="col-md-10 ms-sm-auto main-content">
+        <div class="container">
+            <h1 class="mt-4 mb-4">Update Bibliography</h1>
+            <div class="mb-3">
+                <label for="documentType" class="form-label">Document Type</label>
+                <select class="form-select" id="documentType">
+                    <option value="paper">Paper</option>
+                    <option value="book">Book</option>
+                </select>
+            </div>
+
+            <form id="paperUpdateForm" class="mb-4" enctype="multipart/form-data" action="">
+                <h2>Update Paper Details</h2>
+                <input type="hidden" id="paperId" name="id">
+                <div class="mb-3">
+                    <label for="paperTitle" class="form-label">Judul</label>
+                    <input type="text" class="form-control" id="paperTitle" name="paper_title">
+                </div>
+                <div id="paperAuthorsContainer">
+                    <div class="mb-3">
+                        <label for="paperAuthor1" class="form-label">Author 1</label>
+                        <input type="text" class="form-control" id="paperAuthor1" name="paper_authors[]">
+                    </div>
+                    <div class="mb-3">
+                        <label for="paperAuthorNIM1" class="form-label">Author 1 NIM (optional)</label>
+                        <input type="text" class="form-control" id="paperAuthorNIM1" name="paper_author_nims[]">
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary mb-3" onclick="addAuthorField('paper')">Add Author</button>                <div class="mb-3">
+                    <label for="paperAdvisor" class="form-label">Advisor</label>
+                    <input type="text" class="form-control" id="paperAdvisor" name="advisor">
+                </div>
+                <div class="mb-3">
+                    <label for="paperUniversity" class="form-label">University</label>
+                    <input type="text" class="form-control" id="paperUniversity" name="university">
+                </div>
+                <div class="mb-3">
+                    <label for="paperDepartment" class="form-label">Department</label>
+                    <input type="text" class="form-control" id="paperDepartment" name="department">
+                </div>
+                <div class="mb-3">
+                    <label for="paperYear" class="form-label">Year</label>
+                    <input type="number" class="form-control" id="paperYear" name="year">
+                </div>
+                <div class="mb-3">
+                    <label for="paperIssn" class="form-label">ISSN (e.g., 1234-5678)</label>
+                    <input type="text" class="form-control" id="paperIssn" name="issn" required pattern="\d{4}-?\d{3}[\dX]">
+                    <small class="form-text text-muted">Enter 8 digits, optionally with a hyphen after the first 4 digits.</small>
+                </div>
+                <div class="mb-3">
+                    <label for="doi">DOI (optional):</label>
+                    <input type="text" id="doi" name="doi" class="form-control">
+                  </div>
+                <div class="mb-3">
+                <div class="mb-3">
+                    <label for="paperAbstract" class="form-label">Abstract</label>
+                    <textarea class="form-control" id="paperAbstract" name="abstract" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="paperKeywords" class="form-label">Keywords</label>
+                    <input type="text" class="form-control" id="paperKeywords" name="keywords">
+                </div>
+                <div class="mb-3">
+                    <label for="paperFile" class="form-label">Update PDF/Word File (leave empty to keep current file)</label>
+                    <input type="file" class="form-control" id="paperFile" name="paperFile" accept=".pdf,.doc,.docx">
+                </div>
+                <button type="submit" class="btn btn-primary">Update Paper</button>
+            </form>
+
+            <form id="bookUpdateForm" class="mb-4" style="display: none;" enctype="multipart/form-data" action="">
+                <h2>Update Book Details</h2>
+                <input type="hidden" id="bookId" name="id">
+                <div class="mb-3">
+                    <label for="bookTitle" class="form-label">Judul</label>
+                    <input type="text" class="form-control" id="bookTitle" name="book_title">
+                </div>
+                <div id="bookAuthorsContainer">
+                    <div class="mb-3">
+                        <label for="bookAuthor1" class="form-label">Author 1</label>
+                        <input type="text" class="form-control" id="bookAuthor1" name="book_authors[]">
+                    </div>
+                    <div class="mb-3">
+                        <label for="bookAuthorNIM1" class="form-label">Author 1 NIM (optional)</label>
+                        <input type="text" class="form-control" id="bookAuthorNIM1" name="book_author_nims[]">
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary mb-3" onclick="addAuthorField('book')">Add Author</button>
+                <div class="mb-3">
+                    <label for="bookPublisher" class="form-label">Publisher</label>
+                    <input type="text" class="form-control" id="bookPublisher" name="publisher">
+                </div>
+                <div class="mb-3">
+                    <label for="bookYear" class="form-label">Published Year</label>
+                    <input type="number" class="form-control" id="bookYear" name="published_year">
+                </div>
+                <div class="mb-3">
+                    <label for="bookIsbn" class="form-label">ISBN (e.g., 978-3-16-148410-0)</label>
+                    <input type="text" class="form-control" id="bookIsbn" name="isbn" required pattern="(?:(?=.{17}$)97[89][-\s](?:[0-9]+[-\s]){2}[0-9]+[-\s][0-9]|97[89][0-9]{10}|(?=.{13}$)(?:[0-9]+[-\s]){2}[0-9]+[-\s][0-9Xx]|[0-9]{9}[0-9Xx])">
+                    <small class="form-text text-muted">Enter a valid ISBN-10 or ISBN-13, with or without hyphens.</small>
+                </div>
+                <div class="mb-3">
+                    <label for="doi">DOI (optional):</label>
+                    <input type="text" id="doi" name="doi" class="form-control">
+                  </div>
+                <div class="mb-3">
+                <div class="mb-3">
+                    <label for="bookSummary" class="form-label">Summary</label>
+                    <textarea class="form-control" id="bookSummary" name="summary" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="bookSubject" class="form-label">Subject</label>
+                    <input type="text" class="form-control" id="bookSubject" name="subject">
+                </div>
+                <div class="mb-3">
+                    <label for="bookLanguage" class="form-label">Language</label>
+                    <input type="text" class="form-control" id="bookLanguage" name="language">
+                </div>
+                <div class="mb-3">
+                    <label for="bookPages" class="form-label">Pages</label>
+                    <input type="number" class="form-control" id="bookPages" name="pages">
+                </div>
+                <div class="mb-3">
+                    <label for="bookFile" class="form-label">Update PDF/Word File (leave empty to keep current file)</label>
+                    <input type="file" class="form-control" id="bookFile" name="bookFile" accept=".pdf,.doc,.docx">
+                </div>
+                <button type="submit" class="btn btn-primary">Update Book</button>
+            </form>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // User menu interactions
+        document.getElementById('profileButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Redirecting to admin profile page');
+            // Implement profile page redirection
+        });
+        
+        // Function to get the base URL
+        function getBaseUrl() {
+            const protocol = window.location.protocol;
+            const hostname = window.location.hostname;
+            return `${protocol}//${hostname}:8080`; // Assuming your Go server is on port 8080
+        }
+        
+        // Function to handle the "Search User" button click
+        function handleSearchUser() {
+            window.location.href = `${getBaseUrl()}/search-user`;
+        }
+        
+        // Function to handle the "Add User" button click
+        function handleAddUser() {
+            window.location.href = `${getBaseUrl()}/register`;
+        }
+        
+        // Function to handle the "User Membership's Type" button click
+        function handleUserMembershipType() {
+            window.location.href = `${getBaseUrl()}/user-membership-type`;
+        }
+        
+        // Function to handle the "Bibliography List" button click
+        function handleBibliographyList() {
+            window.location.href = `${getBaseUrl()}/bibliography-list`;
+        }
+        
+        // Function to handle the "Add Bibliography" button click
+        function handleAddBibliography() {
+            window.location.href = `${getBaseUrl()}/add-bibliography`;
+        }
+        
+        // Function to handle the "Home" button click
+        function handleHomeButton() {
+            window.location.href = `${getBaseUrl()}/dashboard`;
+        }
+        
+        function handleEditBibliography(e) {
+            const itemId = e.target.getAttribute('data-id');
+            const itemType = e.target.getAttribute('data-type');
+            const baseUrl = getBaseUrl();
+            window.location.href = `${baseUrl}/update-bibliography/${itemType}/${itemId}`;
+        }
+        
+        function getItemTypeAndId() {
+            const pathParts = window.location.pathname.split('/');
+            const type = pathParts[pathParts.length - 2];
+            const id = pathParts[pathParts.length - 1];
+            return { type, id };
+        }
+        
+        function checkLoggedInStatus() {
+            const token = localStorage.getItem('jwtToken');
+            if (token) {
+                const baseUrl = getBaseUrl();
+                const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+                
+                if (userInfo.role === 'admin') {
+                    console.log('Admin user detected. Staying on current page.');
+                } else {
+                    console.log('Non-admin user detected. Redirecting to homepage.');
+                    window.location.href = `${getBaseUrl()}/home`;
+                }
+            } else {
+                console.log('No token found. Redirecting to login page.');
+                window.location.href = `${getBaseUrl()}/login`;
+            }
+        }
+        
+        function capitalizeEachWord(str) {
+            return str.replace(/\b\w/g, function(char) {
+                return char.toUpperCase();
+            });
+        }
+        
+        function capitalizeInputs() {
+            const titleInputs = document.querySelectorAll('input[name="paper_title"], input[name="book_title"]');
+            titleInputs.forEach(input => {
+                input.addEventListener('input', function(e) {
+                    const start = this.selectionStart;
+                    const end = this.selectionEnd;
+                    this.value = capitalizeEachWord(this.value);
+                    // Restore the cursor position
+                    this.setSelectionRange(start, end);
+                });
+            });
+        }
+        function isValidISSNorISBN(value) {
+            // Remove hyphens and spaces
+            value = value.replace(/[-\s]/g, '');
+            
+            // ISSN validation
+            if (value.length === 8) {
+                return /^\d{7}[\dX]$/.test(value);
+            }
+            
+            // ISBN-10 validation
+            if (value.length === 10) {
+                return /^\d{9}[\dX]$/.test(value);
+            }
+            
+            // ISBN-13 validation
+            if (value.length === 13) {
+                return /^(978|979)\d{10}$/.test(value);
+            }
+            
+            return false;
+        }
+        
+        // Wait for the DOM to be fully loaded before adding event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to safely add event listener
+            function addEventListenerIfElementExists(id, event, handler) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener(event, handler);
+                }
+            }
+
+            const issnIsbnFields = document.querySelectorAll('input[name="ISSN"], input[name="isbn"]');
+            issnIsbnFields.forEach(field => {
+                field.addEventListener('input', function() {
+                    this.value = formatISSNISBN(this.value);
+                });
+            });
+        
+            // Check if we're on the update page
+            const { type, id } = getItemTypeAndId();
+            if (type && id) {
+                fetch(`${getBaseUrl()}/api/${type}s/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Received data:', data);
+                    document.getElementById('documentType').value = type;
+                    populateUpdateForm(type, data);
+                    // Trigger change event to show correct form
+                    document.getElementById('documentType').dispatchEvent(new Event('change'));
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        
+            // Event listeners for form submissions
+            addEventListenerIfElementExists('paperUpdateForm', 'submit', function(e) {
+                e.preventDefault();
+                const { id } = getItemTypeAndId();
+                submitForm('paperUpdateForm', `${getBaseUrl()}/api/papers/${id}`);
+            });
+        
+            addEventListenerIfElementExists('bookUpdateForm', 'submit', function(e) {
+                e.preventDefault();
+                const { id } = getItemTypeAndId();
+                submitForm('bookUpdateForm', `${getBaseUrl()}/api/books/${id}`);
+            });
+        
+            // Add event listeners to the buttons
+            addEventListenerIfElementExists('searchUserBtn', 'click', handleSearchUser);
+            addEventListenerIfElementExists('addUserBtn', 'click', handleAddUser);
+            addEventListenerIfElementExists('userMembershipTypeBtn', 'click', handleUserMembershipType);
+            addEventListenerIfElementExists('bibliographyListBtn', 'click', handleBibliographyList);
+            addEventListenerIfElementExists('addBibliographyBtn', 'click', handleAddBibliography);
+            addEventListenerIfElementExists('homeBtn', 'click', handleHomeButton);
+        
+            // Add event listener for logout button
+            addEventListenerIfElementExists('logoutButton', 'click', function(e) {
+                e.preventDefault();
+                alert('Logging out...');
+                localStorage.removeItem('jwtToken');
+                localStorage.removeItem('userInfo');
+                alert('Logged out successfully');
+                window.location.href = `${getBaseUrl()}/home`;
+            });
+        
+            // Check logged in status when the page loads
+            checkLoggedInStatus();
+            capitalizeInputs();
+        
+            // Toggle between paper and book forms
+            addEventListenerIfElementExists('documentType', 'change', function(e) {
+                const paperForm = document.getElementById('paperUpdateForm');
+                const bookForm = document.getElementById('bookUpdateForm');
+                if (paperForm && bookForm) {
+                    if (e.target.value === 'paper') {
+                        paperForm.style.display = 'block';
+                        bookForm.style.display = 'none';
+                    } else {
+                        paperForm.style.display = 'none';
+                        bookForm.style.display = 'block';
+                    }
+                }
+            });
+        
+            // Add author buttons
+            const addPaperAuthorBtn = document.querySelector('button[onclick="addPaperAuthorField()"]');
+            const addBookAuthorBtn = document.querySelector('button[onclick="addBookAuthorField()"]');
+            if (addPaperAuthorBtn) addPaperAuthorBtn.onclick = () => addAuthorField('paper');
+            if (addBookAuthorBtn) addBookAuthorBtn.onclick = () => addAuthorField('book');
+        });
+        
+        function addAuthorField(type) {
+            const container = document.getElementById(`${type}AuthorsContainer`);
+            const index = container.children.length / 2 + 1;
+            
+            const authorDiv = document.createElement('div');
+            authorDiv.className = 'mb-3';
+            authorDiv.innerHTML = `
+                <label for="${type}Author${index}" class="form-label">Author ${index}</label>
+                <input type="text" class="form-control" id="${type}Author${index}" name="${type === 'paper' ? 'paper_authors' : 'book_authors'}[]">
+            `;
+            container.appendChild(authorDiv);
+        
+            const nimDiv = document.createElement('div');
+            nimDiv.className = 'mb-3';
+            nimDiv.innerHTML = `
+                <label for="${type}AuthorNIM${index}" class="form-label">Author ${index} NIM (optional)</label>
+                <input type="text" class="form-control" id="${type}AuthorNIM${index}" name="${type === 'paper' ? 'paper_author_nims' : 'book_author_nims'}[]">
+            `;
+            container.appendChild(nimDiv);
+        }
+        
+        function submitForm(formId, endpoint) {
+            const form = document.getElementById(formId);
+            const formData = new FormData(form);
+            // Validate ISSN/ISBN
+            const issnIsbnField = formData.get('issn') || formData.get('isbn');
+            if (issnIsbnField && !isValidISSNorISBN(issnIsbnField)) {
+                alert('Invalid ISSN or ISBN format. Please check and try again.');
+                return;
+            }
+            // Handle authors and NIMs for papers
+            if (formId.includes('paper')) {
+                const authors = Array.from(form.querySelectorAll('input[name="paper_authors[]"]'))
+                    .map(input => input.value.trim())
+                    .filter(value => value !== '');
+
+                const nims = Array.from(form.querySelectorAll('input[name="paper_author_nims[]"]'))
+                    .map(input => input.value.trim());
+
+                formData.delete('paper_authors[]');
+                formData.delete('paper_author_nims[]');
+
+                authors.forEach((author, index) => {
+                    formData.append('paper_authors[]', author);
+                    formData.append('paper_author_nims[]', nims[index] || "NON_REGISTERED");
+                });
+            }
+            // Handle authors and NIMs for books
+            else if (formId.includes('book')) {
+                const authors = Array.from(form.querySelectorAll('input[name="authors[]"]'))
+                    .map(input => input.value.trim())
+                    .filter(value => value !== '');
+                
+                const nims = Array.from(form.querySelectorAll('input[name="author_nims[]"]'))
+                    .map(input => input.value.trim());
+
+                formData.delete('authors[]');
+                formData.delete('author_nims[]');
+                
+                authors.forEach((author, index) => {
+                    formData.append('authors[]', author);
+                    formData.append('author_nims[]', nims[index] || "NON_REGISTERED");
+                });
+            }
+
+            // Log the formData for debugging
+            for (let [key, value] of formData.entries()) {
+                console.log(key, value);
+            }
+            
+            const jwtToken = getJWTToken();
+            if (!jwtToken) {
+                alert('You are not logged in. Please log in to submit the form.');
+                window.location.href = `${getBaseUrl()}/login`;
+                return;
+            }
+        
+            fetch(endpoint, {
+                method: 'PUT',
+                body: formData,
+                headers: {
+                    'Authorization': 'Bearer ' + jwtToken,
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Document updated successfully!');
+                window.location.href = `${getBaseUrl()}/bibliography-list`;
+            })
+            .catch(error => {
+                alert('Error updating document: ' + error.message);
+                console.error('Error:', error);
+            });
+        }
+        
+        function getJWTToken() {
+            return localStorage.getItem('jwtToken');
+        }
+
+        function formatISSNISBN(value) {
+            value = value.replace(/[-\s]/g, '');
+            if (value.length === 8) {
+                // ISSN format
+                return value.slice(0, 4) + '-' + value.slice(4);
+            } else if (value.length === 10) {
+                // ISBN-10 format
+                return value.slice(0, 1) + '-' + value.slice(1, 4) + '-' + value.slice(4, 9) + '-' + value.slice(9);
+            } else if (value.length === 13) {
+                // ISBN-13 format
+                return value.slice(0, 3) + '-' + value.slice(3, 4) + '-' + value.slice(4, 7) + '-' + value.slice(7, 12) + '-' + value.slice(12);
+            }
+            return value;
+        }
+        
+        function populateUpdateForm(documentType, responseData) {
+            const formId = documentType === 'paper' ? 'paperUpdateForm' : 'bookUpdateForm';
+            const form = document.getElementById(formId);
+            if (!form) {
+                console.error(`Form with id ${formId} not found`);
+                return;
+            }
+        
+            // Extract the actual data from the nested structure
+            const data = responseData[documentType];
+        
+            if (!data) {
+                console.error('No data found in the response');
+                return;
+            }
+        
+            // Mapping of backend field names to form field names
+            const fieldMapping = {
+                title: 'paper_title' || 'book_title',
+                advisor: 'advisor',
+                university: 'university',
+                department: 'department',
+                year: 'year',
+                issn: 'issn',
+                abstract: 'abstract',
+                keywords: 'keywords',
+                doi: 'doi',
+                // For books
+                publisher: 'publisher',
+                published_year: 'published_year',
+                isbn: 'isbn',
+                summary: 'summary',
+                subject: 'subject',
+                language: 'language',
+                pages: 'pages'
+            };
+        
+            // Populate form fields
+            for (const [key, value] of Object.entries(data)) {
+                const fieldName = fieldMapping[key] || key;
+                const field = form.elements[fieldName];
+                if (field && !['author_details'].includes(key)) {
+                    if (key === 'issn' || key === 'isbn') {
+                        // Format ISSN/ISBN with hyphens for display
+                        field.value = formatISSNISBN(value);
+                    } else {
+                        field.value = value;
+                    }
+                }
+            }
+        
+            // Handle authors
+            const authorsContainer = document.getElementById(`${documentType}AuthorsContainer`);
+            authorsContainer.innerHTML = ''; // Clear existing fields
+        
+            // Use the author_details field
+            const authors = data.author_details || [];
+            authors.forEach((author, index) => {
+                addAuthorField(documentType);
+                const authorField = document.getElementById(`${documentType}Author${index + 1}`);
+                const nimField = document.getElementById(`${documentType}AuthorNIM${index + 1}`);
+                
+                if (authorField) authorField.value = author.name;
+                if (nimField) nimField.value = author.nim;
+            });
+        
+            // If no authors were added, add at least one empty author field
+            if (authorsContainer.children.length === 0) {
+                addAuthorField(documentType);
+            }
+        
+            // Trigger change event to ensure any dependent UI updates occur
+            const event = new Event('change');
+            form.dispatchEvent(event);
+        
+            console.log('Form populated with data:', data);
+        }
+    </script>
+</body>
+</html>

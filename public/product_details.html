@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Details - University Repository</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .logo-placeholder {
+            width: 50px;
+            height: 50px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #007bff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .book-cover {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            aspect-ratio: 3/4;
+        }
+        .item-cover {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            aspect-ratio: 3/4;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" aria-label="Main navigation">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">
+                <div class="logo-placeholder">Logo</div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Books</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Journal Articles</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Conference Papers</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Archives</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="d-inline-block user-avatar">JD</div>
+                            John Doe
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#" id="profileButton">Profile</a></li>
+                            <li><a class="dropdown-item" href="#" id="savedItemsButton">Saved Items</a></li>
+                            <li><a class="dropdown-item" href="#" id="historyButton">Search History</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutButton">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item"><a href="#" id="itemTypeLink"></a></li>
+                <li class="breadcrumb-item active" aria-current="page" id="breadcrumbTitle">Item Details</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="item-cover">
+                    <img id="itemCover" src="" alt="Item Cover">
+                </div>
+            </div>
+            <div class="col-md-8">
+                <h1 id="itemTitle"></h1>
+                <div id="itemDetails"></div>
+                <button class="btn btn-primary" id="downloadItemButton">Download</button>
+                <button class="btn btn-secondary" id="citeItemButton">Cite This Item</button>
+                <button class="btn btn-outline-primary" id="saveItemButton">Save Item</button>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <h2>Description</h2>
+                <p id="itemDescription"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function getBaseUrl() {
+            return `${window.location.protocol}//${window.location.host}`;
+        }
+
+        console.log('product_details.html script loaded');
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOMContentLoaded event fired');
+            const urlParams = new URLSearchParams(window.location.search);
+            const itemType = urlParams.get('type');
+            const itemId = urlParams.get('id');
+            console.log('URL parameters:', { itemType, itemId });
+            if (itemType && itemId) {
+                console.log('Calling loadItemDetails');
+                loadItemDetails(itemType, itemId);
+            } else {
+                console.warn('No item type or ID provided.');
+                alert('No item type or ID provided.');
+            }
+        });
+
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // Function to load item details
+        function loadItemDetails(itemType, itemId) {
+            const baseUrl = getBaseUrl();
+            const endpoint = `public/${itemType}s/${itemId}`;
+            
+            fetch(`${baseUrl}/${endpoint}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('API response:', data);
+
+                    const item = data.item;
+
+                    if (!item || typeof item !== 'object') {
+                        throw new Error('Invalid data structure received from API');
+                    }
+
+                    document.title = `${item.title || 'Unknown Title'} - University Repository`;
+                    document.getElementById('breadcrumbTitle').textContent = item.title || 'Unknown Title';
+                    document.getElementById('itemTitle').textContent = item.title || 'Unknown Title';
+                    document.getElementById('itemTypeLink').textContent = capitalizeFirstLetter(item.type + 's');
+                    document.getElementById('itemTypeLink').href = `${item.type}s.html`;
+                    
+                    const itemDetails = document.getElementById('itemDetails');
+                    itemDetails.innerHTML = '';
+
+                    const commonDetails = `
+                        <p><strong>Author:</strong> ${item.combined_authors || item.author || 'Unknown'}</p>
+                        <p><strong>Year:</strong> ${item.year || 'Unknown'}</p>
+                        <p><strong>DOI:</strong> ${item.doi || 'Unknown'}</p>
+                    `;
+
+                    if (item.type === 'book') {
+                        itemDetails.innerHTML = `
+                            ${commonDetails}
+                            <p><strong>Publisher:</strong> ${item.publisher || 'Unknown'}</p>
+                            <p><strong>ISBN:</strong> ${item.isbn || 'N/A'}</p>
+                            <p><strong>Subject:</strong> ${item.subject || 'N/A'}</p>
+                            <p><strong>Language:</strong> ${item.language || 'N/A'}</p>
+                            <p><strong>Pages:</strong> ${item.pages || 'N/A'}</p>
+                        `;
+                        document.getElementById('itemDescription').textContent = item.summary || 'No summary available.';
+                    } else if (item.type === 'paper') {
+                        itemDetails.innerHTML = `
+                            ${commonDetails}
+                            <p><strong>Advisor:</strong> ${item.advisor || 'N/A'}</p>
+                            <p><strong>University:</strong> ${item.university || 'Unknown'}</p>
+                            <p><strong>Department:</strong> ${item.department || 'N/A'}</p>
+                            <p><strong>ISSN:</strong> ${item.issn || 'N/A'}</p>
+                            <p><strong>Keywords:</strong> ${item.keywords || 'N/A'}</p>
+                        `;
+                        document.getElementById('itemDescription').textContent = item.abstract || 'No abstract available.';
+                    }
+
+                    document.getElementById('itemCover').src = item.file_url || 'placeholder-cover.jpg';
+
+                    // Check if the item is saved
+                    checkIfSaved(item.type, item.id);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while loading item details. Please try again.');
+                });
+        }
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        // Function to check if the item is saved
+        function checkIfSaved(itemType, itemId) {
+            const savedItems = JSON.parse(localStorage.getItem('savedItems')) || {};
+            const saveButton = document.getElementById('saveItemButton');
+            if (savedItems[itemType] && savedItems[itemType].includes(itemId)) {
+                saveButton.textContent = 'Saved';
+                saveButton.classList.add('saved');
+            } else {
+                saveButton.textContent = 'Save Item';
+                saveButton.classList.remove('saved');
+            }
+        }
+
+        // Function to toggle save status
+        function toggleSaveItem(itemType, itemId) {
+            let savedItems = JSON.parse(localStorage.getItem('savedItems')) || {};
+            if (!savedItems[itemType]) {
+                savedItems[itemType] = [];
+            }
+            const index = savedItems[itemType].indexOf(itemId);
+            if (index > -1) {
+                savedItems[itemType].splice(index, 1);
+            } else {
+                savedItems[itemType].push(itemId);
+            }
+            localStorage.setItem('savedItems', JSON.stringify(savedItems));
+            checkIfSaved(itemType, itemId);
+        }
+
+        // Function to generate citation
+        function generateCitation(item) {
+            // Helper function to format author names
+            function formatAuthors(authorString) {
+                if (!authorString) return 'Unknown Author';
+                const authors = authorString.split(',').map(author => author.trim());
+                if (authors.length === 1) {
+                    const nameParts = authors[0].split(' ');
+                    const lastName = nameParts.pop();
+                    const initials = nameParts.map(part => part[0].toUpperCase() + '.').join(' ');
+                    return `${lastName}, ${initials}`;
+                } else if (authors.length > 1) {
+                    const formattedAuthors = authors.map(author => {
+                        const nameParts = author.split(' ');
+                        const lastName = nameParts.pop();
+                        const initials = nameParts.map(part => part[0].toUpperCase() + '.').join(' ');
+                        return `${lastName}, ${initials}`;
+                    });
+                    if (authors.length > 20) {
+                        return formattedAuthors.slice(0, 19).join(', ') + ', ... ' + formattedAuthors[formattedAuthors.length - 1];
+                    }
+                    return formattedAuthors.join(', & ');
+                }
+                return 'Unknown Author';
+            }
+
+            const authors = formatAuthors(item.combined_authors || item.author);
+            const year = item.year || 'n.d.';
+            const title = item.title || 'Untitled';
+
+            if (item.type === 'book') {
+                const publisher = item.publisher || 'Unknown Publisher';
+                return `${authors}. (${year}). ${title}. ${publisher}.`;
+            } else if (item.type === 'paper') {
+                // Assuming 'paper' refers to a thesis or dissertation
+                const university = item.university || 'Unknown University';
+                return `${authors}. (${year}). ${title} [${item.department ? item.department + ' ' : ''}Thesis, ${university}]. ${university}.`;
+            }
+        }
+
+
+        // User menu interactions
+        document.getElementById('profileButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'profile.html';
+        });
+
+        document.getElementById('savedItemsButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'saved-items.html';
+        });
+
+        document.getElementById('historyButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'search-history.html';
+        });
+
+        document.getElementById('logoutButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Logging out...');
+            localStorage.removeItem('jwtToken');
+            localStorage.removeItem('userInfo');
+            alert('Logged out successfully');
+            window.location.href = `${getBaseUrl()}/index.html`;
+        });
+
+        function downloadItem(itemType, itemId) {
+            const token = localStorage.getItem('jwtToken');
+            if (!token) {
+                console.error('No token found');
+                alert('You must be logged in to download items');
+                return;
+            }
+            
+            const baseUrl = getBaseUrl();
+            const endpoint = `${baseUrl}/api/${itemType}/${itemId}/download`;
+            console.log(`Attempting to download from: ${endpoint}`);
+            
+            fetch(endpoint, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                // Get the filename from the Content-Disposition header
+                const contentDisposition = response.headers.get('Content-Disposition');
+                let fileName = 'download'; // default filename
+                if (contentDisposition) {
+                    const fileNameMatch = contentDisposition.match(/filename\*?=([^;]+)/i);
+                    if (fileNameMatch && fileNameMatch.length === 2) {
+                        fileName = decodeURIComponent(fileNameMatch[1].replace(/['"]/g, ''));
+                    }
+                }
+                return response.blob().then(blob => ({ blob, fileName }));
+            })
+            .then(({ blob, fileName }) => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while trying to download the item. Please try again.');
+            });
+        }
+
+
+        // Item-specific interactions
+        document.getElementById('downloadItemButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            const itemType = getUrlParameter('type');
+            const itemId = getUrlParameter('id');
+            downloadItem(itemType, itemId);
+        });
+
+        document.getElementById('citeItemButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            const itemType = getUrlParameter('type');
+            const itemId = getUrlParameter('id');
+            // Fetch item details and generate citation
+            fetch(`${getBaseUrl()}/public/${itemType}s/${itemId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Citation data:', data); // Log the data for debugging
+                    const citation = generateCitation(data.item);
+                    navigator.clipboard.writeText(citation).then(() => {
+                        alert('APA style citation copied to clipboard!');
+                    }).catch(err => {
+                        console.error('Failed to copy citation: ', err);
+                        alert('Failed to copy citation. Please try again.');
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while generating the citation. Please try again.');
+                });
+        });
+
+        document.getElementById('saveItemButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            const itemType = getUrlParameter('type');
+            const itemId = getUrlParameter('id');
+            toggleSaveItem(itemType, itemId);
+        });
+    </script>
+</body>
+</html>

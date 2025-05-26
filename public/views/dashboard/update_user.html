@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Update User - University Repository</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .logo-placeholder {
+            width: 100px;
+            height: 100px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #007bff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .sidebar {
+            height: calc(100vh - 56px);
+            position: fixed;
+            top: 56px;
+            left: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+        }
+        .main-content {
+            margin-left: 16.666667%; /* Matches col-md-2 width */
+            padding: 20px;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: static;
+                height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Admin Dashboard</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="homeBtn" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Manage
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#">Member</a></li>
+                            <li><a class="dropdown-item" href="#">Bibliography</a></li>
+                            <li><a class="dropdown-item" href="#">Report</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="d-inline-block user-avatar">AD</div>
+                            Admin User
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="#" id="profileButton">Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutButton">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 sidebar">
+                <div class="logo-placeholder">Logo</div>
+                <h5 class="text-center mb-3">University Name</h5>
+                <div class="d-grid gap-2">
+                    <button id="searchUserBtn" class="btn btn-primary" type="button">Search User</button>
+                    <button id="addUserBtn" class="btn btn-primary" type="button">Add User</button>
+                    <button id="userMembershipTypeBtn" class="btn btn-primary" type="button">User Membership's Type</button>
+                </div>
+                <hr>
+                <div class="d-grid gap-2">
+                    <button id="bibliographyListBtn" class="btn btn-secondary" type="button">Bibliography List</button>
+                    <button id="addBibliographyBtn" class="btn btn-secondary" type="button">Add Bibliography</button>
+                </div>
+            </div>
+            <main class="col-md-10 ms-sm-auto main-content">
+                <div class="container">
+                    <h1 class="mt-4 mb-4">Update User</h1>
+                    <form id="updateForm">
+                        <div class="mb-3">
+                            <label for="userId" class="form-label">User ID</label>
+                            <input type="text" class="form-control" id="userId" required>
+                            <button type="button" id="fetchUserBtn" class="btn btn-secondary mt-2">Fetch User Data</button>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="userType" class="form-label">User Status</label>
+                            <select class="form-select" id="userType" required>
+                                <option value="">Choose...</option>
+                                <option value="student">Student</option>
+                                <option value="teacher">Teacher/Professor</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="idNumber" class="form-label" id="idNumberLabel">NIM/NISN</label>
+                            <input type="text" class="form-control" id="idNumber" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fakultas" class="form-label">Fakultas</label>
+                            <select class="form-select" id="fakultas" required>
+                                <option value="">Choose...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="jurusan" class="form-label">Jurusan</label>
+                            <select class="form-select" id="jurusan" required>
+                                <option value="">Choose Fakultas first</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea class="form-control" id="address" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Role</label>
+                            <select class="form-select" id="role" required>
+                                <option value="">Choose...</option>
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update User</button>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // User menu interactions
+    document.getElementById('profileButton').addEventListener('click', function(e) {
+        e.preventDefault();
+        alert('Redirecting to admin profile page');
+        // Implement profile page redirection
+    });
+
+    // Function to get the base URL
+    function getBaseUrl() {
+        const protocol = window.location.protocol;
+        const hostname = window.location.hostname;
+        return `${protocol}//${hostname}:8080`; // Assuming your Go server is on port 8080
+    }
+
+    function getJWTToken() {
+        return localStorage.getItem('jwtToken');
+    }   
+
+    // Function to handle the "Search User" button click
+    function handleSearchUser() {
+        window.location.href = `${getBaseUrl()}/search-user`;
+    }
+
+    // Function to handle the "Add User" button click
+    function handleAddUser() {
+        window.location.href = `${getBaseUrl()}/register`;
+    }
+
+    // Function to handle the "User Membership's Type" button click
+    function handleUserMembershipType() {
+        window.location.href = `${getBaseUrl()}/user-membership-type`;
+    }
+
+    // Function to handle the "Bibliography List" button click
+    function handleBibliographyList() {
+        window.location.href = `${getBaseUrl()}/bibliography-list`;
+    }
+
+    // Function to handle the "Add Bibliography" button click
+    function handleAddBibliography() {
+        window.location.href = `${getBaseUrl()}/add-bibliography`;
+    }
+
+    // Function to handle the "Home" button click
+    function handleHomeButton() {
+        window.location.href = `${getBaseUrl()}/dashboard`;
+    }
+
+    function populateFakultasAndJurusan() {
+        const baseUrl = getBaseUrl();
+        const token = localStorage.getItem('jwtToken');
+        if (!token) {
+            alert('You are not logged in. Please log in to access this feature.');
+            window.location.href = `${baseUrl}/login`;
+            return;
+        }
+        
+        fetch(`${baseUrl}/api/fakultas-jurusan`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const fakultasSelect = document.getElementById('fakultas');
+            const jurusanSelect = document.getElementById('jurusan');
+
+            // Clear existing options
+            fakultasSelect.innerHTML = '<option value="">Choose...</option>';
+            jurusanSelect.innerHTML = '<option value="">Choose Fakultas first</option>';
+
+            data.forEach(fakultas => {
+                const option = document.createElement('option');
+                option.value = fakultas.ID;
+                option.textContent = fakultas.name;
+                fakultasSelect.appendChild(option);
+            });
+
+            fakultasSelect.addEventListener('change', function() {
+                jurusanSelect.innerHTML = '<option value="">Choose...</option>';
+                const selectedFakultas = data.find(f => f.ID == this.value);
+                if (selectedFakultas && selectedFakultas.jurusans) {
+                    selectedFakultas.jurusans.forEach(jurusan => {
+                        const option = document.createElement('option');
+                        option.value = jurusan.ID;
+                        option.textContent = jurusan.name;
+                        jurusanSelect.appendChild(option);
+                    });
+                    jurusanSelect.disabled = false;
+                } else {
+                    jurusanSelect.disabled = true;
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching Fakultas and Jurusan data:', error);
+            alert('Failed to load Fakultas and Jurusan data. Please try again later.');
+        });
+    }
+
+    // Function to fetch user data
+    function fetchUserData() {
+        const userId = document.getElementById('userId').value;
+        const jwtToken = getJWTToken();
+        if (!jwtToken) {
+            alert('You are not logged in. Please log in to fetch user data.');
+            window.location.href = `${getBaseUrl()}/login`;
+            return;
+        }
+
+        fetch(`${getBaseUrl()}/api/user/${userId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${jwtToken}`
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch user data');
+            }
+            return response.json();
+        })
+        .then(userData => {
+            // Populate form fields with user data
+            document.getElementById('email').value = userData.email;
+            document.getElementById('name').value = userData.name;
+            document.getElementById('userType').value = userData.user_type;
+            document.getElementById('idNumber').value = userData.id_number;
+            document.getElementById('fakultas').value = userData.fakultas_id;
+            document.getElementById('jurusan').value = userData.jurusan_id;
+            document.getElementById('address').value = userData.address;
+            document.getElementById('role').value = userData.role;
+
+            // Update ID Number label based on user type
+            const idNumberLabel = document.getElementById('idNumberLabel');
+            if (userData.user_type === 'student') {
+                idNumberLabel.textContent = 'NIM';
+            } else if (userData.user_type === 'teacher') {
+                idNumberLabel.textContent = 'NISN';
+            } else {
+                idNumberLabel.textContent = 'NIM/NISN';
+            }
+
+            // Trigger change event on fakultas select to populate jurusan options
+            const event = new Event('change');
+            document.getElementById('fakultas').dispatchEvent(event);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to fetch user data. Please try again.');
+        });
+    }
+
+    // ... (previous JavaScript code)
+
+// Function to send updated user data to the server
+function sendUpdateUserData(userData) {
+    const jwtToken = getJWTToken();
+    if (!jwtToken) {
+        alert('You are not logged in. Please log in to submit the form.');
+        window.location.href = `${getBaseUrl()}/login`;
+        return;
+    }
+    const baseUrl = getBaseUrl();
+    console.log('Sending updated userData:', JSON.stringify(userData, null, 2));
+
+    fetch(`${baseUrl}/api/update-user/${userData.id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + jwtToken
+        },
+        body: JSON.stringify(userData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(`Network response was not ok: ${response.status} ${response.statusText}\n${JSON.stringify(errorData)}`);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.message === "User updated successfully") {
+            alert('User information updated successfully!');
+        } else {
+            alert('Update failed. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred during update. Please try again.');
+    });
+}
+
+function isTokenExpired(token) {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return (payload.exp * 1000) < Date.now();
+}
+
+function checkLoggedInStatus() {
+    const token = localStorage.getItem('jwtToken');
+    if (token && !isTokenExpired(token)) {
+        const baseUrl = getBaseUrl();
+        const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+
+        if (userInfo.role === 'admin') {
+            console.log('Admin user detected. Staying on current page.');
+        } else {
+            console.log('Non-admin user detected. Redirecting to homepage.');
+            window.location.href = `${getBaseUrl()}/index.html`;
+        }
+    } else {
+        console.log('No valid token found. Redirecting to login page.');
+        localStorage.removeItem('jwtToken');
+        window.location.href = `${getBaseUrl()}/login`;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Call initial setup functions
+    populateFakultasAndJurusan();
+    checkLoggedInStatus();
+
+    const userTypeSelect = document.getElementById('userType');
+    const idNumberLabel = document.getElementById('idNumberLabel');
+    userTypeSelect.addEventListener('change', function() {
+        if (this.value === 'student') {
+            idNumberLabel.textContent = 'NIM';
+        } else if (this.value === 'teacher') {
+            idNumberLabel.textContent = 'NISN';
+        } else {
+            idNumberLabel.textContent = 'NIM/NISN';
+        }
+    });
+
+    // Add event listeners to the buttons
+    document.getElementById('searchUserBtn').addEventListener('click', handleSearchUser);
+    document.getElementById('addUserBtn').addEventListener('click', handleAddUser);
+    document.getElementById('userMembershipTypeBtn').addEventListener('click', handleUserMembershipType);
+    document.getElementById('bibliographyListBtn').addEventListener('click', handleBibliographyList);
+    document.getElementById('addBibliographyBtn').addEventListener('click', handleAddBibliography);
+    document.getElementById('homeBtn').addEventListener('click', handleHomeButton);
+    
+    // Add event listener for logout button
+    document.getElementById('logoutButton').addEventListener('click', function(e) {
+        e.preventDefault();
+        alert('Logging out...');
+        localStorage.removeItem('jwtToken');
+        localStorage.removeItem('userInfo');
+        alert('Logged out successfully');
+        window.location.href = `${getBaseUrl()}/index.html`;
+    });
+
+    // Add event listener for fetch user button
+    document.getElementById('fetchUserBtn').addEventListener('click', fetchUserData);
+
+    // Add form submission event listener
+    document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const userData = {
+            id: document.getElementById('userId').value,
+            email: document.getElementById('email').value,
+            name: document.getElementById('name').value,
+            user_type: document.getElementById('userType').value,
+            id_number: document.getElementById('idNumber').value,
+            jurusan_id: parseInt(document.getElementById('jurusan').value),
+            jurusan: document.getElementById('jurusan').options[document.getElementById('jurusan').selectedIndex].text,
+            address: document.getElementById('address').value,
+            role: document.getElementById('role').value,
+        };
+        console.log('Sending updated user data:', userData);
+
+        sendUpdateUserData(userData);
+    });
+});
+</script>
+</body>
+</html>

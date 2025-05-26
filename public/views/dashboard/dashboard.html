@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - University Repository</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+    .logo-placeholder {
+        width: 100px;
+        height: 100px;
+        background-color: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #ddd;
+        margin-bottom: 15px;
+        overflow: hidden; /* This will ensure the image doesn't spill out of the div */
+    }
+
+    .logo-placeholder img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain; /* This will ensure the image maintains its aspect ratio */
+    }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #007bff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .sidebar {
+            height: calc(100vh - 56px);
+            position: fixed;
+            top: 56px;
+            left: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+        }
+        .main-content {
+            margin-left: 16.666667%; /* Matches col-md-2 width */
+            padding: 20px;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: static;
+                height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Admin Dashboard</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="homeBtn" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Manage
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#">Member</a></li>
+                            <li><a class="dropdown-item" href="#">Bibliography</a></li>
+                            <li><a class="dropdown-item" href="#">Report</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="d-inline-block user-avatar">AD</div>
+                            Admin User
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="#" id="profileButton">Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutButton">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 sidebar">
+                <div class="logo-placeholder">
+                    <img src="/public/views/imgs/unidum_logo.png" alt="Logo Universitas Dumai">
+                </div>
+                <h5 class="text-center mb-3">University Name</h5>
+                <div class="d-grid gap-2">
+                    <button id="searchUserBtn" class="btn btn-primary" type="button">Search User</button>
+                    <button id="addUserBtn" class="btn btn-primary" type="button">Add User</button>
+                    <button id="userMembershipTypeBtn" class="btn btn-primary" type="button">User Membership's Type</but>
+                </div>
+                <hr>
+                <div class="d-grid gap-2">
+                    <button id="bibliographyListBtn" class="btn btn-secondary" type="button">Bibliography List</button>
+                    <button id="addBibliographyBtn" class="btn btn-secondary" type="button">Add Bibliography</button>
+                </div>
+                <hr>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-info" type="button" id="generateReportBtn">Generate Report</button>
+                </div>
+            </div>
+            <main class="col-md-10 ms-sm-auto main-content">
+                <div class="container">
+                    <h1 class="mt-4">Welcome to the Admin Dashboard</h1>
+                    <p>This is the homepage of the dashboard. Here's an overview of the repository statistics:</p>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-3 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Total Users</h5>
+                                    <p class="card-text display-4">1,234</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Total Books</h5>
+                                    <p class="card-text display-4">5,678</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Total Papers</h5>
+                                    <p class="card-text display-4">9,012</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Downloads Today</h5>
+                                    <p class="card-text display-4">345</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">User Registrations</h5>
+                                    <canvas id="userChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Download Statistics</h5>
+                                    <canvas id="downloadChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Recent User Activity</h5>
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>User</th>
+                                                <th>Action</th>
+                                                <th>Item</th>
+                                                <th>Time</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>john_doe</td>
+                                                <td>Downloaded</td>
+                                                <td>Introduction to Algorithms</td>
+                                                <td>2 minutes ago</td>
+                                            </tr>
+                                            <tr>
+                                                <td>jane_smith</td>
+                                                <td>Searched</td>
+                                                <td>"machine learning"</td>
+                                                <td>5 minutes ago</td>
+                                            </tr>
+                                            <tr>
+                                                <td>bob_johnson</td>
+                                                <td>Registered</td>
+                                                <td>New User</td>
+                                                <td>10 minutes ago</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // User menu interactions
+        document.getElementById('profileButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Redirecting to admin profile page');
+        });
+
+        // Function to get the base URL
+        function getBaseUrl() {
+            const protocol = window.location.protocol;
+            const hostname = window.location.hostname;
+            return `${protocol}//${hostname}:8080`; // Assuming your Go server is on port 8080
+        }
+
+        // Function to handle the "Search User" button click
+        function handleSearchUser() {
+            window.location.href = `${getBaseUrl()}/search-user`;
+        }
+
+        // Function to handle the "Add User" button click
+        function handleAddUser() {
+            window.location.href = `${getBaseUrl()}/register`;
+        }
+
+        // Function to handle the "User Membership's Type" button click
+        function handleUserMembershipType() {
+            window.location.href = `${getBaseUrl()}/user-membership-type`;
+        }
+
+        // Function to handle the "Bibliography List" button click
+        function handleBibliographyList() {
+            window.location.href = `${getBaseUrl()}/bibliography-list`;
+        }
+
+        // Function to handle the "Add Bibliography" button click
+        function handleAddBibliography() {
+            window.location.href = `${getBaseUrl()}/add-bibliography`;
+        }
+        // Function to handle the "Home" button click
+        function handleHomeButton() {
+            window.location.href = `${getBaseUrl()}/dashboard`;
+        }
+
+        function checkLoggedInStatus() {
+            const token = localStorage.getItem('jwtToken');
+            if (token) {
+                const baseUrl = getBaseUrl();
+                const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+                
+                if (userInfo.role === 'admin') {
+                    // If the user is an admin, do nothing (stay on the current page)
+                    console.log('Admin user detected. Staying on current page.');
+                } else {
+                    // If the user is not an admin, redirect to the homepage
+                    console.log('Non-admin user detected. Redirecting to homepage.');
+                    window.location.href = `${getBaseUrl()}/index.html`;
+                }
+                } else {
+                    // If there's no token, redirect to the login page
+                    console.log('No token found. Redirecting to login page.');
+                    window.location.href = `${getBaseUrl()}/login`;
+                }
+        }
+
+        // Wait for the DOM to be fully loaded before adding event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+        // Add event listeners to the buttons
+            document.getElementById('searchUserBtn').addEventListener('click', handleSearchUser);
+            document.getElementById('addUserBtn').addEventListener('click', handleAddUser);
+            document.getElementById('userMembershipTypeBtn').addEventListener('click', handleUserMembershipType);
+            document.getElementById('bibliographyListBtn').addEventListener('click', handleBibliographyList);
+            document.getElementById('addBibliographyBtn').addEventListener('click', handleAddBibliography);
+            document.getElementById('homeBtn').addEventListener('click', handleHomeButton);
+
+            // Add event listener for logout button
+            document.getElementById('logoutButton').addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Logging out...');
+                localStorage.removeItem('jwtToken');
+                localStorage.removeItem('userInfo');
+                alert('Logged out successfully');
+                window.location.href = `${getBaseUrl()}/index.html`;
+            });
+
+            // Check logged in status when the page loads
+            checkLoggedInStatus();
+        });
+
+        // User Registration Chart
+        var userCtx = document.getElementById('userChart').getContext('2d');
+        var userChart = new Chart(userCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'New Users',
+                    data: [65, 59, 80, 81, 56, 55],
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            }
+        });
+
+        // Download Statistics Chart
+            var downloadCtx = document.getElementById('downloadChart').getContext('2d');
+            var downloadChart = new Chart(downloadCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Books', 'Papers'],
+                    datasets: [{
+                        label: 'Downloads',
+                        data: [1200, 1900],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(54, 162, 235)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            function fetchRegisteredAuthors() {
+            // For demonstration, we'll return a mock list of authors
+            return Promise.resolve([
+                { name: "John Doe", nim: "12345" },
+                { name: "Jane Smith", nim: "67890" },
+                // Add more mock authors as needed
+            ]);
+        }
+
+        // Function to update statistics (this would typically be called after fetching data from your backend)
+        function updateStatistics(users, books, papers) {
+            document.getElementById('totalUsers').textContent = users;
+            document.getElementById('totalBooks').textContent = books;
+            document.getElementById('totalPapers').textContent = papers;
+        }
+
+
+            // Generate Report functionality
+            document.getElementById('generateReportBtn').addEventListener('click', function() {
+                generateReport();
+            });
+
+            function generateReport() {
+            // Fetch statistics
+            const totalUsers = document.getElementById('totalUsers').textContent;
+            const totalBooks = document.getElementById('totalBooks').textContent;
+            const totalPapers = document.getElementById('totalPapers').textContent;
+
+            // Fetch registered authors (this would typically be an API call)
+            fetchRegisteredAuthors().then(authors => {
+                const report = `
+                    Report Generated on ${new Date().toLocaleString()}
+
+                    Statistics:
+                    - Total Users: ${totalUsers}
+                    - Total Books: ${totalBooks}
+                    - Total Papers: ${totalPapers}
+
+                    Registered Authors:
+                    ${authors.map(author => `- ${author.name} (NIM: ${author.nim})`).join('\n')}
+                `;
+
+                // Create a Blob with the report content
+                const blob = new Blob([report], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+
+                // Create a temporary link and trigger the download
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'repository_report.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+            }
+
+    </script>
+</body>
+</html>
